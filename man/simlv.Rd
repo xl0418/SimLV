@@ -41,5 +41,6 @@ simresult <- simlv(n0 = n0, r = r, alphaij = alpha, tmax = tmax)
 df <- melt(simresult, id.vars=c("time"))
 
 # plot the result
-ggplot(df, aes(x = time, y = value, group = variable, color = factor(variable))) + geom_line(linewidth = 2) + theme_minimal()
+ggplot(df, aes(x = time, y = value, group = variable, color = factor(variable))) +
+ geom_line(linewidth = 2) + theme_minimal()
 }

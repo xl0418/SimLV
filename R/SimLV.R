@@ -8,6 +8,9 @@
 #' @param sd_d The standard deviation of the noise.
 #' @param ht The number of substeps in the simulation.
 #' @return data frame of the densities of species.
+#' @importFrom stats rnorm
+#' @import ggplot2
+#' @import reshape2
 #' @examples
 #' library(ggplot2)
 #' library(reshape2)
@@ -22,7 +25,8 @@
 #' df <- melt(simresult, id.vars=c("time"))
 #'
 #' # plot the result
-#' ggplot(df, aes(x = time, y = value, group = variable, color = factor(variable))) + geom_line(linewidth = 2) + theme_minimal()
+#' ggplot(df, aes(x = time, y = value, group = variable, color = factor(variable))) +
+#'  geom_line(linewidth = 2) + theme_minimal()
 
 #' @export
 simlv <- function(n0, r, alphaij, tmax, mean_d = 0, sd_d = 0.1, ht = 1) {
@@ -35,11 +39,12 @@ simlv <- function(n0, r, alphaij, tmax, mean_d = 0, sd_d = 0.1, ht = 1) {
     for(tti in 1:ht){
 
       for(ii in 1:no_species){
-        temp_nt[ii] <- temp_nt[ii] + (r[ii] * temp_nt[ii] * (1 - sum(alphaij[ii, ] * temp_nt)) + rnorm(1, mean_d, sd_d)) / ht
+        # multiplicative error
+        temp_nt[ii] <- (temp_nt[ii] + (r[ii] * temp_nt[ii] * (1 - sum(alphaij[ii, ] * temp_nt)))) * exp(rnorm(1, mean_d, sd_d)) / ht
       }
     }
     # max of temp_nt and 0
-    temp_nt[temp_nt < 0] <- 0
+    # temp_nt[temp_nt < 0] <- 0
 
     nt[tt+1, ] <- temp_nt
   }
